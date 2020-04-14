@@ -1,0 +1,135 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+
+namespace Template
+{
+    /// <summary>
+    /// This is the main type for your game.
+    /// </summary>
+    public class Game1 : Game
+    {
+        GraphicsDeviceManager graphics;
+        Vector2 OrmPos = new Vector2(100, 300);
+        SpriteBatch spriteBatch;
+        Texture2D Orm;
+        int riktning = 0;
+        //KOmentar
+        public Game1()
+        {
+            graphics = new GraphicsDeviceManager(this);
+            Content.RootDirectory = "Content";
+        }
+
+        /// <summary>
+        /// Allows the game to perform any initialization it needs to before starting to run.
+        /// This is where it can query for any required services and load any non-graphic
+        /// related content.  Calling base.Initialize will enumerate through any components
+        /// and initialize them as well.
+        /// </summary>
+        protected override void Initialize()
+        {
+            // TODO: Add your initialization logic here
+
+            base.Initialize();
+        }
+
+        /// <summary>
+        /// LoadContent will be called once per game and is the place to load
+        /// all of your content.
+        /// </summary>
+        protected override void LoadContent()
+        {
+            // Create a new SpriteBatch, which can be used to draw textures.
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            Orm = Content.Load<Texture2D>("Orm");
+            // TODO: use this.Content to load your game content here 
+        }
+
+        /// <summary>
+        /// UnloadContent will be called once per game and is the place to unload
+        /// game-specific content.
+        /// </summary>
+        protected override void UnloadContent()
+        {
+            // TODO: Unload any non ContentManager content here
+        }
+
+        /// <summary>
+        /// Allows the game to run logic such as updating the world,
+        /// checking for collisions, gathering input, and playing audio.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Update(GameTime gameTime)
+                
+            //Skapade en kod så att den ändrar en int vilket är riktning
+        {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
+
+            if(Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                riktning=0;
+            }
+            
+            if(Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                riktning=1;
+            }
+            
+            if(Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                riktning=2;
+            }
+            
+            if(Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                riktning=3;
+            }
+
+            //Skapade en kod så att ormen rör sig ett håll beroende på vilket värde riktnings inten har
+
+            if (riktning==0)
+            {
+                OrmPos += new Vector2(0,-1);
+            }
+
+            if (riktning==1)
+            {
+                OrmPos += new Vector2(0,1);
+            }
+            
+            if (riktning==2)
+            {
+                OrmPos += new Vector2(-1,0);
+            }
+
+            if (riktning==3)
+            {
+                OrmPos += new Vector2(1,0);
+            }
+
+
+            KeyboardState kstate = Keyboard.GetState();
+
+            // TODO: Add your update logic here
+
+            base.Update(gameTime);
+        }
+
+        /// <summary>
+        /// This is called when the game should draw itself.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            // TODO: Add your drawing code here.
+            spriteBatch.Begin();
+            spriteBatch.Draw(Orm, OrmPos, Color.White);
+            spriteBatch.End();
+            base.Draw(gameTime);
+        }
+    }
+}
