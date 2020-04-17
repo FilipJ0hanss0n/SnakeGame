@@ -1,0 +1,184 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using System;
+using System.Collections.Generic;
+
+namespace Template
+{
+    /// <summary>
+    /// This is the main type for your game.
+    /// </summary>
+    public class Game1 : Game
+    {
+        GraphicsDeviceManager graphics;
+        SpriteBatch spriteBatch;
+        Texture2D Orm;
+        int riktning = 1;
+        Random rand = new Random();
+        Vector2 BrödPos;
+        List<Vector2> OrmPos= new List<Vector2>();
+        //KOmentar
+        public Game1()
+        {
+            graphics = new GraphicsDeviceManager(this);
+            Content.RootDirectory = "Content";
+        }
+
+        /// <summary>
+        /// Allows the game to perform any initialization it needs to before starting to run.
+        /// This is where it can query for any required services and load any non-graphic
+        /// related content.  Calling base.Initialize will enumerate through any components
+        /// and initialize them as well.
+        /// </summary>
+        protected override void Initialize()
+        {
+            reset();
+            // TODO: Add your initialization logic here
+
+            base.Initialize();
+        }
+
+        /// <summary>
+        /// LoadContent will be called once per game and is the place to load
+        /// all of your content.
+        /// </summary>
+        protected override void LoadContent()
+        {
+            // Create a new SpriteBatch, which can be used to draw textures.
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            Orm = Content.Load<Texture2D>("nyorm");
+            // TODO: use this.Content to load your game content here 
+        }
+
+        /// <summary>
+        /// UnloadContent will be called once per game and is the place to unload
+        /// game-specific content.
+        /// </summary>
+        protected override void UnloadContent()
+        {
+            // TODO: Unload any non ContentManager content here
+        }
+
+        void reset()
+        {
+            OrmPos=new List<Vector2>();
+            for (int i=0; i<5; i++)
+            {
+                OrmPos.Add(new Vector2(0, 4-i));
+            }
+            BrödPos = new Vector2(
+                rand.Next(0, (GraphicsDevice.PresentationParameters.BackBufferWidth/16 -1)),
+                rand.Next(0, (GraphicsDevice.PresentationParameters.BackBufferHeight/16 -1)));
+        }
+
+        /// <summary>
+        /// Allows the game to run logic such as updating the world,
+        /// checking for collisions, gathering input, and playing audio.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Update(GameTime gameTime)
+                
+            //Skapade en kod så att den ändrar en int vilket är riktning
+        {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
+
+            if(Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                riktning=0;
+            }
+            
+            if(Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                riktning=1;
+            }
+            
+            if(Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                riktning=2;
+            }
+            
+            if(Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                riktning=3;
+            }
+
+            //Skapade en kod så att ormen rör sig ett håll beroende på vilket värde riktnings inten har
+            for (int i=OrmPos.Count-1; i > 0; i--)
+            {
+                OrmPos[i]=OrmPos[i-1];
+            }
+
+            if (riktning==0)
+            {
+                OrmPos[0] += new Vector2(0,-1);
+            }
+
+            if (riktning==1)
+            {
+                OrmPos[0] += new Vector2(0,1);
+            }
+            
+            if (riktning==2)
+            {
+                OrmPos[0] += new Vector2(-1,0);
+            }
+
+            if (riktning==3)
+            {
+                OrmPos[0] += new Vector2(1,0);
+            }
+            
+            if (OrmPos[0].X==BrödPos.X && OrmPos[0].Y==BrödPos.Y)
+            {
+                OrmPos.Add(OrmPos[OrmPos.Count-1]);
+                BrödPos=new Vector2(
+                rand.Next(0, (GraphicsDevice.PresentationParameters.BackBufferWidth/16 -1)),
+                rand.Next(0, (GraphicsDevice.PresentationParameters.BackBufferHeight/16 -1)));
+            }
+
+            KeyboardState kstate = Keyboard.GetState();
+
+            // TODO: Add your update logic here
+
+            base.Update(gameTime);
+        }
+
+        /// <summary>
+        /// This is called when the game should draw itself.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+            spriteBatch.Begin();
+            if (true)
+            {
+                 #region Grid
+            for (int x=0; x < 100; x++)
+            {
+                spriteBatch.Draw(Orm, new Rectangle(x*16,0,1,1000),Color.Black);
+            }
+
+            for(int y=0; y < 50; y++)
+            {
+                spriteBatch.Draw(Orm, new Rectangle(0,y*16,1000, 1),Color.Black);
+            }
+
+            #endregion
+            }
+
+            foreach(Vector2 pos in OrmPos)
+            {
+                spriteBatch.Draw(Orm, new Rectangle((int)pos.X*16,(int)pos.Y*16,15,15),Color.White);
+            }
+
+            spriteBatch.Draw(Orm, new Rectangle((int)BrödPos.X*16,(int)BrödPos.Y*16,15,15),Color.Brown);
+            // TODO: Add your drawing code here.
+            
+            spriteBatch.End();
+            base.Draw(gameTime);
+        }
+    }
+}
