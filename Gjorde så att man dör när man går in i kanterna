@@ -1,0 +1,184 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using System;
+using System.Collections.Generic;
+
+namespace Template
+{
+    public class Game1 : Game
+    {
+        GraphicsDeviceManager graphics;
+        SpriteBatch spriteBatch;
+        //La in en bild på ormen
+        Texture2D Orm;
+        //Skapade en int för riktningen
+        int riktning = 1;
+        //Skapade en random rand till bröd positionen
+        Random rand = new Random();
+        //Skapade en vector till bröd positionen
+        Vector2 BrödPos;
+        //Skapade en lista till ormen
+        List<Vector2> OrmPos= new List<Vector2>();
+        //KOmentar
+        public Game1()
+        {
+            graphics = new GraphicsDeviceManager(this);
+            Content.RootDirectory = "Content";
+        }
+
+ 
+        protected override void Initialize()
+        {
+           
+            reset();
+            base.Initialize();
+        }
+
+
+        protected override void LoadContent()
+        {
+            //
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            //La in bilden
+            Orm = Content.Load<Texture2D>("nyorm");
+        }
+
+        protected override void UnloadContent()
+        {
+            
+        }
+
+        void reset()
+        {   //kod för riktningen
+            riktning=1;
+            OrmPos=new List<Vector2>();
+            //kod för hur många block ormen ska börja med
+            for (int i=0; i<5; i++)
+            {
+                OrmPos.Add(new Vector2(0, 4-i));
+            }
+            //En random kod för bröden
+            BrödPos = new Vector2(
+                rand.Next(0, (GraphicsDevice.PresentationParameters.BackBufferWidth-1)/16),
+                rand.Next(0, (GraphicsDevice.PresentationParameters.BackBufferHeight-1)/16));
+        }
+
+        protected override void Update(GameTime gameTime)
+                
+            //Skapade en kod så att den ändrar en int vilket är riktning
+        {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
+
+            if(Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                riktning=0;
+            }
+            
+            if(Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                riktning=1;
+            }
+            
+            if(Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                riktning=2;
+            }
+            
+            if(Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                riktning=3;
+            }
+
+            //Skapade en kod så att ormen rör sig ett håll beroende på vilket värde riktnings inten har
+            for (int i=OrmPos.Count-1; i > 0; i--)
+            {
+                OrmPos[i]=OrmPos[i-1];
+            }
+
+            if (riktning==0)
+            {
+                OrmPos[0] += new Vector2(0,-1);
+            }
+
+            if (riktning==1)
+            {
+                OrmPos[0] += new Vector2(0,1);
+            }
+            
+            if (riktning==2)
+            {
+                OrmPos[0] += new Vector2(-1,0);
+            }
+
+            if (riktning==3)
+            {
+                OrmPos[0] += new Vector2(1,0);
+            }
+            
+            if (OrmPos[0].X==BrödPos.X && OrmPos[0].Y==BrödPos.Y)
+            {
+                OrmPos.Add(OrmPos[OrmPos.Count-1]);
+                BrödPos=new Vector2(
+                rand.Next(0, (GraphicsDevice.PresentationParameters.BackBufferWidth-1)/16),
+                rand.Next(0, (GraphicsDevice.PresentationParameters.BackBufferHeight-1)/16));
+            }
+            //If satser så att ormen dör om ormen åker in i väggarna
+            if(OrmPos[0].X<0)
+            {
+                Environment.Exit(0);
+            }
+
+            if(OrmPos[0].Y<0)
+            {
+                Environment.Exit(0);
+            }
+
+            if(OrmPos[0].X>50)
+            {
+                Environment.Exit(0);
+            }
+
+            if(OrmPos[0].Y>30)
+            {
+                Environment.Exit(0);
+            }
+          
+            KeyboardState kstate = Keyboard.GetState();
+
+            base.Update(gameTime);
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+            spriteBatch.Begin();
+            if (true)
+            {
+                 #region Grid
+            for (int x=0; x < 100; x++)
+            {
+                spriteBatch.Draw(Orm, new Rectangle(x*16,0,1,1000),Color.Black);
+            }
+
+            for(int y=0; y < 50; y++)
+            {
+                spriteBatch.Draw(Orm, new Rectangle(0,y*16,1000, 1),Color.Black);
+            }
+
+            #endregion
+            }
+
+            foreach(Vector2 pos in OrmPos)
+            {
+                spriteBatch.Draw(Orm, new Rectangle((int)pos.X*16,(int)pos.Y*16,15,15),Color.White);
+            }
+
+            spriteBatch.Draw(Orm, new Rectangle((int)BrödPos.X*16,(int)BrödPos.Y*16,15,15),Color.Brown);
+            
+            spriteBatch.End();
+            base.Draw(gameTime);
+        }
+    }
+}
